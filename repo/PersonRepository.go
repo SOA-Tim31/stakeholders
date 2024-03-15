@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	"stakeholders/model"
 	"strconv"
 
@@ -44,4 +45,26 @@ func (repo *PersonRepository) CreatePerson(person *model.Person) error {
 	}
 	println("Rows affected: ", dbResult.RowsAffected)
 	return nil
+}
+
+func (repo *PersonRepository) Update(person *model.Person) (model.Person, error) {
+	var existingPerson model.Person
+	dbResult := repo.DatabaseConnection.First(&existingPerson, "id = ?", strconv.Itoa(person.Id))
+
+	if dbResult.Error != nil {
+		return model.Person{}, dbResult.Error
+	}
+
+	existingPerson.Name = person.Name
+	existingPerson.Surname = person.Surname
+	existingPerson.Email = person.Email
+	existingPerson.ProfileImage = person.ProfileImage
+	existingPerson.Bio = person.Bio
+	existingPerson.Quote = person.Quote
+
+	if err := repo.DatabaseConnection.Save(&existingPerson).Error; err != nil {
+		return model.Person{}, fmt.Errorf("failed to update person: %v", err)
+	}
+
+	return existingPerson, nil
 }

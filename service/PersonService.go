@@ -34,3 +34,11 @@ func (service *PersonService) Create(person *model.Person) error {
 	}
 	return nil
 }
+
+func (service *PersonService) Update(person *model.Person) (*model.Person, error) {
+	updatedPerson, err := service.PersonRepo.Update(person)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't update person")
+	}
+	return &updatedPerson, nil
+}
