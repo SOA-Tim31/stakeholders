@@ -12,6 +12,7 @@ func SetupRoutes(handler *handler.UserHandler, handler2 *handler.PersonHandler) 
 
 	router.HandleFunc("/users/getAll", handler.FindAllUsers).Methods("GET", "OPTIONS")
 	router.HandleFunc("/users/block", handler.BlockOrUblock).Methods("PUT", "OPTIONS")
+	router.HandleFunc("/users/register", handler.Register).Methods("POST", "OPTIONS")
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 

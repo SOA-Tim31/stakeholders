@@ -30,8 +30,6 @@ func (repo *PersonRepository) FindEmailById(id int) (string, error) {
 
 	person := model.Person{}
 	person, err := repo.FindById(strconv.Itoa(id))
-	println("name", person.Name)
-	println("email", person.Email)
 	if err != nil {
 		return " ", err
 	}

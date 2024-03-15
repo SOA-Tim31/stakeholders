@@ -14,8 +14,7 @@ type UserHandler struct {
 
 func (handler *UserHandler) FindAllUsers(writer http.ResponseWriter, req *http.Request) {
 	users, err := handler.UserService.FindAllUsers()
-	println("username", users[0].Username)
-	println("id:", users[0].Id)
+
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
@@ -84,7 +83,7 @@ func (handler *UserHandler) BlockOrUblock(writer http.ResponseWriter, req *http.
 	var accountDto dto.AccountDto
 	err := json.NewDecoder(req.Body).Decode(&accountDto)
 	user := MapAccountToUser(accountDto)
-	println("prvi")
+
 	if err != nil {
 		println("Error while parsing ", err.Error())
 		writer.WriteHeader(http.StatusBadRequest)
@@ -103,6 +102,24 @@ func (handler *UserHandler) BlockOrUblock(writer http.ResponseWriter, req *http.
 
 }
 
-func (handler *UserHandler) Create(writer http.ResponseWriter, req *http.Request) {
+func (handler *UserHandler) Register(writer http.ResponseWriter, req *http.Request) {
 
+	var accountRegDto dto.AccountRegistrationDto
+	err := json.NewDecoder(req.Body).Decode(&accountRegDto)
+
+	if err != nil {
+		println("Error while parsing ", err.Error())
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	authTokenDto, err := handler.UserService.Register(&accountRegDto)
+
+	if err != nil {
+		writer.WriteHeader(http.StatusConflict)
+		return
+	}
+
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(authTokenDto)
 }

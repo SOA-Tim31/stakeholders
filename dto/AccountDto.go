@@ -8,3 +8,11 @@ type AccountDto struct {
 	Role     string `json:"role"`
 	IsActive bool   `json:"isActive"`
 }
+
+type AccountRegistrationDto struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Surname  string `json:"surname"`
+}

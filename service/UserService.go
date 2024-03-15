@@ -1,7 +1,10 @@
 package service
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
+	"stakeholders/dto"
 	"stakeholders/model"
 	"stakeholders/repo"
 )
@@ -30,7 +33,7 @@ func (service *UserService) Create(user *model.User) error {
 }
 
 func (service *UserService) BlockOrUblock(user *model.User) (*model.User, error) {
-	println("drugi")
+
 	updatedUser, err := service.UserRepo.BlockOrUblock(user)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't do block/unblock operation")
@@ -39,7 +42,7 @@ func (service *UserService) BlockOrUblock(user *model.User) (*model.User, error)
 }
 
 func (service *UserService) FindEmail(user *model.User) string {
-	println("3.5")
+
 	email, err := service.PersonService.FindEmail(user.Id)
 	if err != nil {
 		return "Invalid email"
@@ -49,4 +52,65 @@ func (service *UserService) FindEmail(user *model.User) string {
 
 func (service *UserService) FindAllUsers() ([]model.User, error) {
 	return service.UserRepo.FindAll()
+}
+
+func (service *UserService) Register(accountRegDto *dto.AccountRegistrationDto) (*dto.AuthenticationTokensDto, error) {
+	users, err := service.UserRepo.FindAll()
+	if err != nil {
+		return nil, fmt.Errorf("couldn't register")
+	}
+	if len(users) != 0 {
+		for _, user := range users {
+			if user.Username == accountRegDto.Username {
+				println("isti username")
+				return nil, fmt.Errorf("Username already exists")
+			}
+
+			email, _ := service.PersonService.FindEmail(user.Id)
+			if email == accountRegDto.Email {
+				return nil, fmt.Errorf("email already exists")
+			}
+		}
+	}
+	service.CreateUserAndPerson(accountRegDto)
+	token := dto.AuthenticationTokensDto{
+		Id:          8,
+		AccessToken: "lala",
+	}
+	return &token, nil
+}
+
+func (service *UserService) CreateUserAndPerson(accountRegDto *dto.AccountRegistrationDto) {
+	verificationToken := GenerateUniqueVerificationToken()
+	user := model.User{
+		Id:                4,
+		Username:          accountRegDto.Username,
+		Password:          accountRegDto.Password,
+		Role:              model.Tourist,
+		IsActive:          true,
+		VerificationToken: verificationToken,
+	}
+	service.UserRepo.CreateUser(&user)
+
+	person := model.Person{
+		Id:      4,
+		UserId:  4,
+		Name:    accountRegDto.Name,
+		Surname: accountRegDto.Surname,
+		Email:   accountRegDto.Email,
+	}
+	service.PersonService.Create(&person)
+	//generisanje id-a automatski, emailsender, vratiti token
+}
+
+func GenerateUniqueVerificationToken() string {
+	tokenBytes := make([]byte, 32)
+	_, err := rand.Read(tokenBytes)
+	if err != nil {
+		// Handle error
+		return ""
+	}
+
+	verificationToken := hex.EncodeToString(tokenBytes)
+	return verificationToken
 }

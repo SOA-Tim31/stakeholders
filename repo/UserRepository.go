@@ -56,6 +56,5 @@ func (repo *UserRepository) FindAll() ([]model.User, error) {
 	if dbResult.Error != nil {
 		return nil, dbResult.Error
 	}
-	println("iddd", users[0].Id)
 	return users, nil
 }
