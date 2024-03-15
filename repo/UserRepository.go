@@ -41,13 +41,12 @@ func (repo *UserRepository) BlockOrUblock(user *model.User) (model.User, error) 
 	return foundUser, nil
 }
 
-func (repo *UserRepository) CreateUser(user *model.User) error {
+func (repo *UserRepository) CreateUser(user *model.User) (int, error) {
 	dbResult := repo.DatabaseConnection.Create(user)
 	if dbResult.Error != nil {
-		return dbResult.Error
+		return 0, dbResult.Error
 	}
-	println("Rows affected: ", dbResult.RowsAffected)
-	return nil
+	return user.Id, nil
 }
 
 func (repo *UserRepository) FindAll() ([]model.User, error) {

@@ -25,12 +25,12 @@ func initDB() *gorm.DB {
 	database.Exec("DROP TABLE IF EXISTS people CASCADE")
 	database.AutoMigrate(&model.User{})
 	database.AutoMigrate(&model.Person{})
-	database.Exec("INSERT INTO users (id, username, password, role, is_active, verification_token) VALUES (1, 'turista1', 'turista1', 2, true, 'aea71b9a6ca84d75dcbe8a78f8f6a1f3cde0f7e8569ba0b03946b57580379189')")
-	database.Exec("INSERT INTO users (id, username, password, role, is_active, verification_token) VALUES (2, 'autor', 'autor', 1, true, 'bea71b9a6ca84d75dcbe8a78f8f6a1f3cde0f7e8569ba0b03946b57580379189') ")
-	database.Exec("INSERT INTO users (id, username, password, role, is_active, verification_token) VALUES (3, 'admin', 'admin', 0, true, 'cea71b9a6ca84d75dcbe8a78f8f6a1f3cde0f7e8569ba0b03946b57580379189')")
-	database.Exec("INSERT INTO people (id, user_id, name, surname, email, profile_image, bio, quote) VALUES (1, 1, 'John', 'Doe', 'john.doe@example.com', 'profile.jpg', 'Software Engineer', 'Live life to the fullest.')")
-	database.Exec("INSERT INTO people (id, user_id, name, surname, email) VALUES (2, 2, 'Jane', 'Smith', 'jane.smith@example.com')")
-	database.Exec("INSERT INTO people (id, user_id, name, surname, email) VALUES (3, 3, 'Alice', 'Johnson', 'alice.johnson@example.com') ")
+	database.Exec("INSERT INTO users (username, password, role, is_active, verification_token) VALUES ('turista1', 'turista1', 2, true, 'aea71b9a6ca84d75dcbe8a78f8f6a1f3cde0f7e8569ba0b03946b57580379189')")
+	database.Exec("INSERT INTO users (username, password, role, is_active, verification_token) VALUES ('autor', 'autor', 1, true, 'bea71b9a6ca84d75dcbe8a78f8f6a1f3cde0f7e8569ba0b03946b57580379189') ")
+	database.Exec("INSERT INTO users (username, password, role, is_active, verification_token) VALUES ('admin', 'admin', 0, true, 'cea71b9a6ca84d75dcbe8a78f8f6a1f3cde0f7e8569ba0b03946b57580379189')")
+	database.Exec("INSERT INTO people (user_id, name, surname, email, profile_image, bio, quote) VALUES (1, 'John', 'Doe', 'john.doe@example.com', 'profile.jpg', 'Software Engineer', 'Live life to the fullest.')")
+	database.Exec("INSERT INTO people (user_id, name, surname, email) VALUES (2, 'Jane', 'Smith', 'jane.smith@example.com')")
+	database.Exec("INSERT INTO people (user_id, name, surname, email) VALUES (3, 'Alice', 'Johnson', 'alice.johnson@example.com') ")
 
 	return database
 }

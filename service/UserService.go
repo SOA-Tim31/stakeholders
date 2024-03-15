@@ -24,14 +24,6 @@ func (service *UserService) FindUser(id string) (*model.User, error) {
 	return &user, nil
 }
 
-func (service *UserService) Create(user *model.User) error {
-	err := service.UserRepo.CreateUser(user)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func (service *UserService) BlockOrUblock(user *model.User) (*model.User, error) {
 
 	updatedUser, err := service.UserRepo.BlockOrUblock(user)
@@ -62,8 +54,7 @@ func (service *UserService) Register(accountRegDto *dto.AccountRegistrationDto) 
 	if len(users) != 0 {
 		for _, user := range users {
 			if user.Username == accountRegDto.Username {
-				println("isti username")
-				return nil, fmt.Errorf("Username already exists")
+				return nil, fmt.Errorf("username already exists")
 			}
 
 			email, _ := service.PersonService.FindEmail(user.Id)
@@ -83,18 +74,16 @@ func (service *UserService) Register(accountRegDto *dto.AccountRegistrationDto) 
 func (service *UserService) CreateUserAndPerson(accountRegDto *dto.AccountRegistrationDto) {
 	verificationToken := GenerateUniqueVerificationToken()
 	user := model.User{
-		Id:                4,
 		Username:          accountRegDto.Username,
 		Password:          accountRegDto.Password,
 		Role:              model.Tourist,
 		IsActive:          true,
 		VerificationToken: verificationToken,
 	}
-	service.UserRepo.CreateUser(&user)
+	id, _ := service.UserRepo.CreateUser(&user)
 
 	person := model.Person{
-		Id:      4,
-		UserId:  4,
+		UserId:  id,
 		Name:    accountRegDto.Name,
 		Surname: accountRegDto.Surname,
 		Email:   accountRegDto.Email,
