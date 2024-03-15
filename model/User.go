@@ -1,9 +1,5 @@
 package model
 
-import (
-	"gorm.io/gorm"
-)
-
 type UserRole int
 
 const (
@@ -13,24 +9,19 @@ const (
 )
 
 type User struct {
-	Id       int      `json:"id"`
-	Username string   `json:"username"`
-	Password string   `json:"password"`
-	Email    string   `json:"email"`
-	Role     UserRole `json:"role"`
-	IsActive bool     `json:"isActive"`
+	Id                int      `gorm:"column:id;type:integer" json:"id"`
+	Username          string   `json:"username"`
+	Password          string   `json:"password"`
+	Role              UserRole `json:"role"`
+	IsActive          bool     `json:"isActive"`
+	VerificationToken string   `json:"verificationToken"`
 }
 
 type TempUser struct {
-	UserId     int
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	Email      string `json:"email"`
-	RoleString string `json:"role"`
-	IsActive   bool   `json:"isActive"`
-}
-
-func (user *User) BeforeCreate(scope *gorm.DB) error {
-	//user.Id = uuid.New()
-	return nil
+	Id                int
+	Username          string `json:"username"`
+	Password          string `json:"password"`
+	RoleString        string `json:"role"`
+	IsActive          bool   `json:"isActive"`
+	VerificationToken string `json:"verificationToken"`
 }

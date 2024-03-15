@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"stakeholders/dto"
 	"stakeholders/model"
 	"stakeholders/service"
 )
@@ -19,19 +20,51 @@ func (handler *UserHandler) FindAllUsers(writer http.ResponseWriter, req *http.R
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	json.NewEncoder(writer).Encode(users)
+
+	var accountDtos []dto.AccountDto = handler.MapUsersToAccounts(users)
+
+	json.NewEncoder(writer).Encode(accountDtos)
 }
 
-func MapTempUserToUser(tempUser model.TempUser) model.User {
+func (handler *UserHandler) MapUsersToAccounts(users []model.User) []dto.AccountDto {
+
+	var accountDtos []dto.AccountDto
+	for _, user := range users {
+		accountDto := dto.AccountDto{
+			UserId:   user.Id,
+			Username: user.Username,
+			Password: user.Password,
+			Email:    handler.UserService.FindEmail(&user), // You might need to fill this from somewhere
+			Role:     MapToString(user.Role),
+			IsActive: user.IsActive,
+		}
+		accountDtos = append(accountDtos, accountDto)
+	}
+	return accountDtos
+}
+
+func MapAccountToUser(accountDto dto.AccountDto) model.User {
 	user := model.User{
-		Id:       tempUser.UserId,
-		Username: tempUser.Username,
-		Password: tempUser.Password,
-		Email:    tempUser.Email,
-		Role:     MapToUserRole(tempUser.RoleString),
-		IsActive: tempUser.IsActive,
+		Id:       accountDto.UserId,
+		Username: accountDto.Username,
+		Password: accountDto.Password,
+		Role:     MapToUserRole(accountDto.Role),
+		IsActive: accountDto.IsActive,
 	}
 	return user
+}
+
+func MapToString(role model.UserRole) string {
+	switch role {
+	case model.Administrator:
+		return "Administrator"
+	case model.Author:
+		return "Author"
+	case model.Tourist:
+		return "Tourist"
+	default:
+		return "Tourist"
+	}
 }
 
 func MapToUserRole(role string) model.UserRole {
@@ -48,10 +81,10 @@ func MapToUserRole(role string) model.UserRole {
 }
 
 func (handler *UserHandler) BlockOrUblock(writer http.ResponseWriter, req *http.Request) {
-	var tempUser model.TempUser
-	err := json.NewDecoder(req.Body).Decode(&tempUser)
-	user := MapTempUserToUser(tempUser)
-
+	var accountDto dto.AccountDto
+	err := json.NewDecoder(req.Body).Decode(&accountDto)
+	user := MapAccountToUser(accountDto)
+	println("prvi")
 	if err != nil {
 		println("Error while parsing ", err.Error())
 		writer.WriteHeader(http.StatusBadRequest)

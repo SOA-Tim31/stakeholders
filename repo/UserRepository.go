@@ -2,6 +2,7 @@ package repo
 
 import (
 	"stakeholders/model"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -22,7 +23,7 @@ func (repo *UserRepository) FindById(id string) (model.User, error) {
 func (repo *UserRepository) BlockOrUblock(user *model.User) (model.User, error) {
 	var foundUser model.User
 	println("user id: ", user.Id)
-	dbResult := repo.DatabaseConnection.First(&foundUser, "id = ?", user.Id)
+	dbResult := repo.DatabaseConnection.First(&foundUser, "id = ?", strconv.Itoa(user.Id))
 	println("foundUser username: ", foundUser.Username)
 	println("foundUser isActive: ", foundUser.IsActive)
 	if dbResult.Error != nil {
@@ -30,6 +31,7 @@ func (repo *UserRepository) BlockOrUblock(user *model.User) (model.User, error) 
 	}
 
 	foundUser.IsActive = !foundUser.IsActive
+	println("foundUser isActive: ", foundUser.IsActive)
 	updateResult := repo.DatabaseConnection.Save(&foundUser)
 
 	if updateResult.Error != nil {
