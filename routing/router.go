@@ -16,6 +16,7 @@ func SetupRoutes(handler *handler.UserHandler, handler2 *handler.PersonHandler, 
 	router.HandleFunc("/people/get/{id}", handler2.Get).Methods("GET", "OPTIONS")
 	router.HandleFunc("/people/update", handler2.Update).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/ratings/create", handler3.Create).Methods("POST", "OPTIONS")
+	router.HandleFunc("/ratings/getAll", handler3.GetAll).Methods("GET", "OPTIONS")
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 

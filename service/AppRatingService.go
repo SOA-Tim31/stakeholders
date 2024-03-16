@@ -10,6 +10,10 @@ type AppRatingService struct {
 	AppRatingRepository *repo.AppRatingRepository
 }
 
+func (service *AppRatingService) GetAll() ([]model.AppRating, error) {
+	return service.AppRatingRepository.FindAll()
+}
+
 func (service *AppRatingService) Create(appRating *model.AppRating) (*model.AppRating, error) {
 	appRatings, err := service.AppRatingRepository.FindAll()
 	if err != nil {

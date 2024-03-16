@@ -33,6 +33,8 @@ func initDB() *gorm.DB {
 	database.Exec("INSERT INTO people (user_id, name, surname, email, profile_image, bio, quote) VALUES (1, 'John', 'Doe', 'john.doe@example.com', 'profile.jpg', 'Software Engineer', 'Live life to the fullest.')")
 	database.Exec("INSERT INTO people (user_id, name, surname, email) VALUES (2, 'Jane', 'Smith', 'jane.smith@example.com')")
 	database.Exec("INSERT INTO people (user_id, name, surname, email) VALUES (3, 'Alice', 'Johnson', 'alice.johnson@example.com') ")
+	database.Exec("INSERT INTO app_ratings (user_id, rating, description, date_created) VALUES (2, 9, 'Odlicna aplikacija, svaka cast', '2024-03-16 21:15:41.765+01')")
+	database.Exec("INSERT INTO app_ratings (user_id, rating, description, date_created) VALUES (3, 2, 'Uzas aplikacija, nepregledno', '2024-03-11 20:15:41.765+01')")
 
 	return database
 }

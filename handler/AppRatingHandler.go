@@ -32,3 +32,13 @@ func (handler *AppRatingHandler) Create(writer http.ResponseWriter, req *http.Re
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(createdApp)
 }
+
+func (handler *AppRatingHandler) GetAll(writer http.ResponseWriter, req *http.Request) {
+	ratings, err := handler.AppRatingService.GetAll()
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(writer).Encode(ratings)
+}
