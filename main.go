@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"stakeholders/handler"
 	"stakeholders/model"
 	"stakeholders/repo"
@@ -14,8 +15,8 @@ import (
 )
 
 func initDB() *gorm.DB {
-	connection_url := "user=postgres password=super dbname=SOA port=5432 sslmode=disable"
-	database, err := gorm.Open(postgres.Open(connection_url), &gorm.Config{})
+	//connection_url := "user=postgres password=super dbname=explorer port=5432 sslmode=disable"
+	database, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal(err)
@@ -30,7 +31,7 @@ func initDB() *gorm.DB {
 	database.Exec("INSERT INTO users (username, password, role, is_active, verification_token) VALUES ('turista1', 'turista1', 2, true, 'aea71b9a6ca84d75dcbe8a78f8f6a1f3cde0f7e8569ba0b03946b57580379189')")
 	database.Exec("INSERT INTO users (username, password, role, is_active, verification_token) VALUES ('autor', 'autor', 1, true, 'bea71b9a6ca84d75dcbe8a78f8f6a1f3cde0f7e8569ba0b03946b57580379189') ")
 	database.Exec("INSERT INTO users (username, password, role, is_active, verification_token) VALUES ('admin', 'admin', 0, true, 'cea71b9a6ca84d75dcbe8a78f8f6a1f3cde0f7e8569ba0b03946b57580379189')")
-	database.Exec("INSERT INTO people (user_id, name, surname, email, profile_image, bio, quote) VALUES (1, 'John', 'Doe', 'john.doe@example.com', 'profile.jpg', 'Software Engineer', 'Live life to the fullest.')")
+	database.Exec("INSERT INTO people (user_id, name, surname, email, profile_image, bio, quote) VALUES (1, 'John', 'Doe', 'john.doe@example.com', 'https://upload.wikimedia.org/wikipedia/commons/4/41/Profile-720.png', 'Software Engineer', 'Live life to the fullest.')")
 	database.Exec("INSERT INTO people (user_id, name, surname, email) VALUES (2, 'Jane', 'Smith', 'jane.smith@example.com')")
 	database.Exec("INSERT INTO people (user_id, name, surname, email) VALUES (3, 'Alice', 'Johnson', 'alice.johnson@example.com') ")
 	database.Exec("INSERT INTO app_ratings (user_id, rating, description, date_created) VALUES (2, 9, 'Odlicna aplikacija, svaka cast', '2024-03-16 21:15:41.765+01')")
@@ -63,5 +64,5 @@ func main() {
 	router := routing.SetupRoutes(userHandler, personHandler, appRatingHandler)
 
 	log.Println("Server starting...")
-	log.Fatal(http.ListenAndServe(":8081", router))
+	log.Fatal(http.ListenAndServe(":8082", router))
 }
