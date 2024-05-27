@@ -1,10 +1,7 @@
 package service
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
-	"stakeholders/dto"
 	"stakeholders/model"
 	"stakeholders/repo"
 )
@@ -46,6 +43,58 @@ func (service *UserService) FindAllUsers() ([]model.User, error) {
 	return service.UserRepo.FindAll()
 }
 
+func (service *UserService) Registration(registration *model.Registration, token *string, item *bool) error {
+
+	newUser := model.User{
+		Username:          registration.Username,
+		Password:          registration.Password,
+		Role:              model.ParseUserRole(registration.Role),
+		VerificationToken: *token,
+		IsActive:          *item,
+	}
+	newPerson := model.Person{
+		Name:    registration.Name,
+		Surname: registration.Surname,
+		Email:   registration.Email,
+	}
+
+	err := service.UserRepo.RegisterUser(&newUser)
+	if err != nil {
+		return err
+	}
+
+	newPerson.UserId = newUser.Id
+
+	err = service.UserRepo.RegisterPerson(&newPerson)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (service *UserService) GetAndVerifyUserByToken(token *string) (*model.User, error) {
+	user, err := service.UserRepo.GetUserByToken(token)
+	if err != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("menu item with token %s not found", *token))
+	}
+	*&user.IsActive = true
+	updatedUser, err := service.UpdateUser(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedUser, nil
+}
+
+func (service *UserService) UpdateUser(user *model.User) (*model.User, error) {
+	updatedUser, err := service.UserRepo.UpdateUser(user)
+	if err != nil {
+		return nil, err
+	}
+	return updatedUser, nil
+}
+
+/* bez tokena
 func (service *UserService) Register(accountRegDto *dto.AccountRegistrationDto) (*dto.AuthenticationTokensDto, error) {
 	users, err := service.UserRepo.FindAll()
 	if err != nil {
@@ -103,3 +152,4 @@ func GenerateUniqueVerificationToken() string {
 	verificationToken := hex.EncodeToString(tokenBytes)
 	return verificationToken
 }
+*/

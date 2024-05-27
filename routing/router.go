@@ -7,16 +7,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func SetupRoutes(handler *handler.UserHandler, handler2 *handler.PersonHandler, handler3 *handler.AppRatingHandler) http.Handler {
+func SetupRoutes(handler *handler.UserHandler, handler2 *handler.PersonHandler, handler3 *handler.AppRatingHandler, handler4 *handler.AuthHandler) http.Handler {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/users/getAll", handler.FindAllUsers).Methods("GET", "OPTIONS")
 	router.HandleFunc("/users/block", handler.BlockOrUblock).Methods("PUT", "OPTIONS")
-	router.HandleFunc("/users/register", handler.Register).Methods("POST", "OPTIONS")
+	router.HandleFunc("/login", handler4.Login).Methods("POST", "OPTIONS")
+	router.HandleFunc("/register", handler.Registration).Methods("POST", "OPTIONS")
 	router.HandleFunc("/people/get/{id}", handler2.Get).Methods("GET", "OPTIONS")
 	router.HandleFunc("/people/update", handler2.Update).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/ratings/create", handler3.Create).Methods("POST", "OPTIONS")
 	router.HandleFunc("/ratings/getAll", handler3.GetAll).Methods("GET", "OPTIONS")
+	router.HandleFunc("/verifyEmail/{token}", handler.VerifyEmail).Methods("GET", "OPTIONS")
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 

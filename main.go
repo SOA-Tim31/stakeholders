@@ -2,14 +2,21 @@ package main
 
 import (
 	"log"
+	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"stakeholders/config"
 	"stakeholders/handler"
 	"stakeholders/model"
+	stakeholders "stakeholders/proto"
 	"stakeholders/repo"
 	"stakeholders/routing"
 	"stakeholders/service"
+	"syscall"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -47,6 +54,19 @@ func main() {
 		return
 	}
 
+	cfg := config.GetConfig()
+	//GRPC
+	listener, err := net.Listen("tcp", cfg.Address)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer func(listener net.Listener) {
+		err := listener.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(listener)
+
 	personRepo := &repo.PersonRepository{DatabaseConnection: database}
 	personService := &service.PersonService{PersonRepo: personRepo}
 	personHandler := &handler.PersonHandler{PersonService: personService}
@@ -59,9 +79,36 @@ func main() {
 	appRatingService := &service.AppRatingService{AppRatingRepository: appRatingRepo}
 	appRatingHandler := &handler.AppRatingHandler{AppRatingService: appRatingService}
 
+	authRepo := &repo.AuthRepository{DatabaseConnection: database}
+	authService := &service.AuthService{AuthRepo: authRepo}
+	authHandler := &handler.AuthHandler{AuthService: authService}
+
+	authHandlergRPC := handler.NewAuthHandlergRPC(authService)
+
+	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
+
+	stakeholders.RegisterAuthServiceServer(grpcServer, authHandlergRPC)
+
+	userHandlergRPC := handler.NewUserHandlergRPC(userService, authService)
+	stakeholders.RegisterStakeholderServiceServer(grpcServer, userHandlergRPC)
+
 	//router := routing.SetupRoutes(userHandler)
 
-	router := routing.SetupRoutes(userHandler, personHandler, appRatingHandler)
+	go func() {
+		if err := grpcServer.Serve(listener); err != nil {
+			log.Fatal("server error: ", err)
+		}
+	}()
+
+	stopCh := make(chan os.Signal)
+	signal.Notify(stopCh, syscall.SIGTERM)
+
+	<-stopCh
+
+	grpcServer.Stop()
+
+	router := routing.SetupRoutes(userHandler, personHandler, appRatingHandler, authHandler)
 
 	log.Println("Server starting...")
 	log.Fatal(http.ListenAndServe(":8082", router))
