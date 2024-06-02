@@ -3,6 +3,8 @@ option go_package = "proto/stakeholders";
 
 service StakeholderService {
     rpc RegistrationRpc(RegistrationRequest) returns (RegistrationResponse);
+    rpc FindAllUsersRpc(FindAllRequest) returns (FindAllResponse);
+    rpc GetProfileRpc(GetProfileRequest) returns (GetProfileResponse);
 }
 
 service AuthService {
@@ -61,3 +63,26 @@ message LoginResponse {
     string access_token = 2;
 }
 
+message AccountDto {
+    uint64 UserId = 1;
+    string Username = 2;
+    string Password = 3;
+    string Email = 4;
+    string Role = 5;
+    bool IsActive = 6;
+}
+
+message FindAllRequest {
+}
+
+message FindAllResponse {
+    repeated AccountDto accounts = 1;
+}
+
+message GetProfileRequest {
+    string id = 1;
+}
+
+message GetProfileResponse{
+    Person person = 1;
+}

@@ -94,6 +94,14 @@ func (service *UserService) UpdateUser(user *model.User) (*model.User, error) {
 	return updatedUser, nil
 }
 
+func (service *UserService) GetPersonByUserId(userId *string) (*model.Person, error) {
+	person, err := service.UserRepo.GetPersonByUserId(userId)
+	if err != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("menu item with id %s not found", *userId))
+	}
+	return person, nil
+}
+
 /* bez tokena
 func (service *UserService) Register(accountRegDto *dto.AccountRegistrationDto) (*dto.AuthenticationTokensDto, error) {
 	users, err := service.UserRepo.FindAll()

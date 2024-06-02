@@ -20,6 +20,15 @@ func (repo *UserRepository) FindById(id string) (model.User, error) {
 	return user, nil
 }
 
+func (repo *UserRepository) GetPersonByUserId(userId *string) (*model.Person, error) {
+	person := model.Person{}
+	dbResult := repo.DatabaseConnection.First(&person, "user_id = ?", *userId)
+	if dbResult.Error != nil {
+		return nil, dbResult.Error
+	}
+	return &person, nil
+}
+
 func (repo *UserRepository) BlockOrUblock(user *model.User) (model.User, error) {
 	var foundUser model.User
 	dbResult := repo.DatabaseConnection.First(&foundUser, "id = ?", strconv.Itoa(user.Id))
