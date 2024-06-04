@@ -13,7 +13,7 @@ func SetupRoutes(handler *handler.UserHandler, handler2 *handler.PersonHandler, 
 	router.HandleFunc("/users/getAll", handler.FindAllUsers).Methods("GET", "OPTIONS")
 	router.HandleFunc("/users/block", handler.BlockOrUblock).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/login", handler4.Login).Methods("POST", "OPTIONS")
-	router.HandleFunc("/register", handler.Registration).Methods("POST", "OPTIONS")
+	// router.HandleFunc("/register", handler.Registration).Methods("POST", "OPTIONS")
 	router.HandleFunc("/people/get/{id}", handler2.Get).Methods("GET", "OPTIONS")
 	router.HandleFunc("/people/update", handler2.Update).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/ratings/create", handler3.Create).Methods("POST", "OPTIONS")

@@ -105,36 +105,36 @@ func (handler *UserHandler) BlockOrUblock(writer http.ResponseWriter, req *http.
 
 }
 
-func (userHandler *UserHandler) Registration(writer http.ResponseWriter, req *http.Request) {
-	var registration model.Registration
+// func (userHandler *UserHandler) Registration(writer http.ResponseWriter, req *http.Request) {
+// 	var registration model.Registration
 
-	err := json.NewDecoder(req.Body).Decode(&registration)
-	if err != nil {
-		println("Error while parsing json")
-		writer.WriteHeader(http.StatusBadRequest)
-		return
-	}
+// 	err := json.NewDecoder(req.Body).Decode(&registration)
+// 	if err != nil {
+// 		println("Error while parsing json")
+// 		writer.WriteHeader(http.StatusBadRequest)
+// 		return
+// 	}
 
-	token := userHandler.AuthService.GenerateUniqueVerificationToken()
-	item := false
+// 	token := userHandler.AuthService.GenerateUniqueVerificationToken()
+// 	item := false
 
-	err = userHandler.UserService.Registration(&registration, &token, &item)
-	if err != nil {
-		println("Error while registering a new user")
-		writer.WriteHeader(http.StatusExpectationFailed)
-		return
-	}
+// 	err = userHandler.UserService.Registration(&registration, &token, &item)
+// 	if err != nil {
+// 		println("Error while registering a new user")
+// 		writer.WriteHeader(http.StatusExpectationFailed)
+// 		return
+// 	}
 
-	err = userHandler.AuthService.SendVerificationMail(&registration, token)
-	if err != nil {
-		println("Error while sending an email")
-		writer.WriteHeader(http.StatusExpectationFailed)
-		return
-	}
+// 	err = userHandler.AuthService.SendVerificationMail(&registration, token)
+// 	if err != nil {
+// 		println("Error while sending an email")
+// 		writer.WriteHeader(http.StatusExpectationFailed)
+// 		return
+// 	}
 
-	writer.WriteHeader(http.StatusCreated)
-	writer.Header().Set("Content-Type", "application/json")
-}
+// 	writer.WriteHeader(http.StatusCreated)
+// 	writer.Header().Set("Content-Type", "application/json")
+// }
 
 func (userHandler *UserHandler) VerifyEmail(writer http.ResponseWriter, req *http.Request) {
 	token := mux.Vars(req)["token"]

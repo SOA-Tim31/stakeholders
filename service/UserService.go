@@ -43,7 +43,7 @@ func (service *UserService) FindAllUsers() ([]model.User, error) {
 	return service.UserRepo.FindAll()
 }
 
-func (service *UserService) Registration(registration *model.Registration, token *string, item *bool) error {
+func (service *UserService) Registration(registration *model.Registration, token *string, item *bool) (error, uint64) {
 
 	newUser := model.User{
 		Username:          registration.Username,
@@ -60,16 +60,16 @@ func (service *UserService) Registration(registration *model.Registration, token
 
 	err := service.UserRepo.RegisterUser(&newUser)
 	if err != nil {
-		return err
+		return err, 0;
 	}
 
 	newPerson.UserId = newUser.Id
 
-	err = service.UserRepo.RegisterPerson(&newPerson)
+	err= service.UserRepo.RegisterPerson(&newPerson)
 	if err != nil {
-		return err
+		return err, 0
 	}
-	return nil
+	return nil, uint64(newPerson.Id);	
 }
 
 func (service *UserService) GetAndVerifyUserByToken(token *string) (*model.User, error) {
