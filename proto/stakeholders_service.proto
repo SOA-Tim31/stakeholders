@@ -27,6 +27,8 @@ message User {
     string VerificationToken = 9; 
 }
 
+
+
 message Person {
 	uint64 Id= 1;        
 	uint64 UserId=2;       
@@ -51,6 +53,7 @@ message RegistrationRequest {
 
 message RegistrationResponse{
     string message = 1;
+    uint64 id = 2;
 }
 
 message LoginRequest {

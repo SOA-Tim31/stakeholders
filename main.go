@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -48,11 +49,13 @@ func initDB() *gorm.DB {
 }
 
 func main() {
+	fmt.Println("Starting db migrations")
 	database := initDB()
 	if database == nil {
 		print("FAILED TO CONNECT TO DB")
 		return
 	}
+	fmt.Println("DB migrations done")
 
 	cfg := config.GetConfig()
 	//GRPC

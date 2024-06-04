@@ -37,7 +37,7 @@ func (uh *UserHandlergRPC) RegistrationRpc(ctx context.Context, req *stakeholder
 	token := uh.AuthService.GenerateUniqueVerificationToken()
 	item := false
 
-	err := uh.UserService.Registration(&registration, &token, &item)
+	err, idUser:= uh.UserService.Registration(&registration, &token, &item)
 	if err != nil {
 		return nil, fmt.Errorf("error while registering a new user: %v", err)
 	}
@@ -49,6 +49,7 @@ func (uh *UserHandlergRPC) RegistrationRpc(ctx context.Context, req *stakeholder
 
 	return &stakeholders.RegistrationResponse{
 		Message: "User registered successfully",
+		Id: uint64(idUser),
 	}, nil
 
 }
